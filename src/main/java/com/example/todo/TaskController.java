@@ -16,8 +16,8 @@ import java.util.List;
 public class TaskController {
 
     private List<Task> tasks = new ArrayList<>(List.of(
-            new Task(1L, "Learn Spring Boot", false),
-            new Task(2L, "Build my first API", true)
+            new Task(1L, "Learn Spring Boot","Learn Spring boot and API with ChatGPT", false),
+            new Task(2L, "Build my first API","Learn how to build my first API", true)
     ));
     private Long nextId = 3L;
 
@@ -64,6 +64,7 @@ public class TaskController {
         for (Task task : tasks) {
             if (task.getId().equals(id)) {
                 task.setTitle(updatedTask.getTitle());
+                task.setDescription(updatedTask.getDescription());
                 task.setCompleted(updatedTask.isCompleted());
                 return ResponseEntity.ok(task);
             }

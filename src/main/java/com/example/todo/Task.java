@@ -3,11 +3,14 @@ package com.example.todo;
 public class Task {
     private Long id;
     private String title;
+    private String description;
     private boolean completed;
 
-    public Task(Long id, String title, boolean completed) {
+
+    public Task(Long id, String title,String description, boolean completed) {
         this.id = id;
         this.title = title;
+        this.description = description;
         this.completed = completed;
     }
 
@@ -25,6 +28,14 @@ public class Task {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public boolean isCompleted() {
