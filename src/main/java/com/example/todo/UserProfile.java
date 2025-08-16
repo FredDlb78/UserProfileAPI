@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "user_profiles")
 @Data // génère getters, setters, toString, equals, hashCode
@@ -27,6 +30,12 @@ public class UserProfile {
 
     private Integer experienceYears;
 
-    @Column(length = 255)
-    private String technicalStack;
+    @ElementCollection
+    @CollectionTable(
+            name = "user_profile_skills",
+            joinColumns = @JoinColumn(name = "user_profile_id")
+    )
+    @Column(name = "skill", length = 100)
+    private List<String> technicalStack = new ArrayList<>();
+
 }

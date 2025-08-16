@@ -2,10 +2,12 @@ package com.example.todo.controller;
 
 import com.example.todo.UserProfile;
 import com.example.todo.dto.ErrorResponse;
+import com.example.todo.dto.TechnicalStackPatchRequest;
 import com.example.todo.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
+import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,6 +65,31 @@ public class UserProfileController {
     public ResponseEntity<UserProfile> updateProfile(@PathVariable Long id, @RequestBody UserProfile updatedProfile) {
         UserProfile profile = userProfileService.updateProfile(id, updatedProfile);
         return ResponseEntity.ok(profile);
+    }
+
+    @PatchMapping(
+            value = "/profiles/{id}/technical-stack",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Update only a user technical stack")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Technical stack updated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserProfile.class))),
+            @ApiResponse(responseCode = "400", description = "Payload invalid",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Profile not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<UserProfile> patchUserTechnicalStack(
+            @PathVariable Long id,
+            @Valid @RequestBody TechnicalStackPatchRequest body) {
+
+        UserProfile updated = userProfileService.updateTechnicalStack(id, body.skills());
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/profiles/{id}")
