@@ -5,10 +5,13 @@ import com.example.todo.dto.ErrorResponse;
 import com.example.todo.dto.TechnicalStackPatchRequest;
 import com.example.todo.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.*;
-import io.swagger.v3.oas.annotations.responses.*;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,31 +70,6 @@ public class UserProfileController {
         return ResponseEntity.ok(profile);
     }
 
-    @PatchMapping(
-            value = "/profiles/{id}/technical-stack",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @Operation(summary = "Update only a user technical stack")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Technical stack updated",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = UserProfile.class))),
-            @ApiResponse(responseCode = "400", description = "Payload invalid",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Profile not found",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    public ResponseEntity<UserProfile> patchUserTechnicalStack(
-            @PathVariable Long id,
-            @Valid @RequestBody TechnicalStackPatchRequest body) {
-
-        UserProfile updated = userProfileService.updateTechnicalStack(id, body.skills());
-        return ResponseEntity.ok(updated);
-    }
-
     @DeleteMapping("/profiles/{id}")
     @Operation(summary = "Delete a profile by its ID")
     @ApiResponses(value = {
@@ -103,4 +81,22 @@ public class UserProfileController {
         userProfileService.deleteProfile(id);
         return ResponseEntity.noContent().build();
     }
+
+    /* ====== NEW: PATCH skills only ====== */
+    @PatchMapping("/profiles/{id}/technical-stack")
+    @Operation(summary = "Update an user's technical stack")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Technical stack successfully patched",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfile.class))),
+            @ApiResponse(responseCode = "404", description = "Profile not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<UserProfile> patchUserTechnicalStack(
+            @PathVariable Long id,
+            @RequestBody @Valid TechnicalStackPatchRequest body
+    ) {
+        UserProfile updated = userProfileService.updateTechnicalStack(id, body.getSkills());
+        return ResponseEntity.ok(updated);
+    }
+
 }
